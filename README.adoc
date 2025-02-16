@@ -1,0 +1,302 @@
+= Apache FreeMarker Demo Project
+Dumitru Bodac <dmitrii1996@gmail.com>
+:doctype: book
+:toc: macro
+:sectnums:
+:icons: font
+:highlightjs-languages: java, ftl, bash, xml
+:url-quickref: https://docs.asciidoctor.org/asciidoc/latest/syntax-quick-reference/
+
+toc::[]
+
+== Project Overview
+This project demonstrates the usage of Apache FreeMarker for dynamic templating in Java. The project includes examples
+of working with JSON, XML, and SQL templates, along with advanced features such as custom functions, includes, and error handling.
+
+== Configuration Setup Details
+
+1. **Prerequisites**:
+- Java 8 installed.
+- Maven for dependency management.
+- FreeMarker library dependency in `pom.xml`:
+
+[source,xml]
+----
+<dependency>
+<groupId>org.freemarker</groupId>
+<artifactId>freemarker</artifactId>
+<version>2.3.31</version>
+</dependency>
+----
+
+2. **Project Structure**:
+```plaintext
+freemarker-demo
+├── src
+|   ├── test
+|   |   └── java
+|   |       └── com.freemarker.demo
+|   |           └── apacheFreemarker
+|   |           |   ├── FileTypeEnum.java
+|   |           |   ├── FreemarkerUtil.java
+|   |           |   ├── ScriptList.java
+|   |           |   └── scripts
+|   |           |       ├── employee_details_json.ftl
+|   |           |       ├── json_script.ftl
+|   |           |       ├── query_example.ftl
+|   |           |       └── xml_script.ftl
+|   |           ├── dataTable
+|   |           |   ├── RequestOfUser.java
+|   |           |   └── configurer
+|   |           |       └── DefaultDataTableConfigurer.java
+|   |           ├── exceptions
+|   |           |   └── DemoException.java
+|   |           ├── runner
+|   |           |   └── CucumberRunner.java
+|   |           └── stepDef
+|   |               └── StepDefinitions.java
+|   └── resources
+|       └── features
+|           └── Demo.feature
+```
+
+3. **Using FreeMarker Configuration**:
+- Example setup in `FreemarkerUtil`:
+
+[source,java]
+----
+static {
+        configuration = new Configuration(Configuration.VERSION_2_3_32); <1>
+        ClassTemplateLoader loader = new ClassTemplateLoader(FreemarkerUtil.class, TEMPLATE_DIRECTORY); <2>
+        configuration.setTemplateLoader(loader); <2>
+        try {
+            configuration.setDirectoryForTemplateLoading(new File(TEMPLATE_DIRECTORY)); <3>
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        configuration.setDefaultEncoding("UTF-8"); <4>
+        configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER); <5>
+    }
+----
+<1> Creates a FreeMarker configuration instance using version 2.3.32.
+<2> `ClassTemplateLoader` allows loading templates from the classpath. +
+Uses FreemarkerUtil.class as the base reference and TEMPLATE_DIRECTORY as the folder where templates are stored.
+<3> load templates from a physical directory using `setDirectoryForTemplateLoading()`.
+<4> Ensures that templates and output text are handled using UTF-8, supporting special characters, non-English text, and proper formatting.
+<5> Defines how FreeMarker handles template errors — `RETHROW_HANDLER` throws exceptions, ensuring issues are caught in Java instead of failing silently. +
+ +
+Other possible options:
+
+- `IGNORE_HANDLER`: Ignores errors (risky in production).
+- `DEBUG_HANDLER`: Shows debug information in output.
+- `HTML_DEBUG_HANDLER`: Outputs error messages formatted for HTML pages.
+
+
+`processTemplate(String templateName, Object data)` gets and process a FreeMarker template by replacing placeholders with
+actual values from the `data` object and returns the final populated template as a `String`.
+[source,java]
+----
+include::src/test/java/com/freemarker/demo/apacheFreemarker/FreemarkerUtil.java[lines=36]
+----
+`getTemplate(String templateName)` loads a template from a storage location by it's name (location is defined in setting Configuration)
+[source,java]
+----
+include::src/test/java/com/freemarker/demo/apacheFreemarker/FreemarkerUtil.java[lines=55..57]
+----
+Processes the template using FreeMarker. This method replaces placeholders in the template with actual values from `data`
+by getting key or getter (from object) that matches placeholder name and replaces it's value.
+[source,java]
+----
+include::src/test/java/com/freemarker/demo/apacheFreemarker/FreemarkerUtil.java[lines=44]
+----
+
+
+
+4. **Running the Project**:
+- Compile and run the project using Maven:
+
+[source,bash]
+----
+mvn clean install
+mvn test -Dtest=CucumberRunner
+----
+
+== Features of FreeMarker (FTL)
+
+=== Accessing Variables
+
+- variable replacing with the actual value of the expression inside the curly brackets. They are called interpolations.
+[source,ftl]
+----
+${userName}
+----
+
+- Providing a Default Value
+[source,ftl]
+----
+${userName!"Guest"}
+----
+
+`!` used to provide a default value if a variable is `null` or not defined.
++
+ If `userName` is not set, it outputs `"Guest"`. If `userName = "Alice"`, it outputs `"Alice"`.
+
+- `??` Checks if a variable exists (is defined).
+
+[source,ftl]
+----
+<#if userName??>User exists<#else>User not found</#if>
+----
+If `userName` is set, it prints `"User exists"`. +
+If `not`, it prints `"User not found"`.
+
+=== Accessing Object Fields
+
+- Dot Notation is used to access Java Object's field value
+
+[source,ftl]
+----
+${employee.name}   →  // Access "name" field of "employee" object
+${employee.salary} →  // Access "salary" field
+----
+If `employee = { "name": "John", "salary": 50000 }`, output:
+
+[source,ftl]
+----
+John
+50000
+----
+
+- Bracket Notation `[""]` for Dynamic Access
+[source,ftl]
+----
+${employee["name"]}
+----
+
+=== Conditional Statements
+
+- If-Else Statement
+[source,ftl]
+----
+<#if salary == 50000>
+    High salary
+<#else>
+    Regular salary
+</#if>
+----
+
+=== Loops and literals
+- Parsing sent list from java
+[source,ftl]
+----
+<#list employees as employee>
+    ${employee.name} - ${employee.salary}
+</#list>
+</#if>
+----
+- There are different type to add separators on listing:
+
+[source,ftl]
+----
+<#list employees as employee>
+    ${employee.name}<#if employee_has_next>, </#if>
+</#list>
+----
+
+[source,ftl]
+----
+<#list employees as employee>
+    ${employee.name}<#sep>,</#sep></#if>
+</#list>
+----
+- Joining Lists Elements
+[source,ftl]
+----
+${items?join(", ")} → "Apple, Banana, Cherry"
+----
+
+- Filtering objects form a list
+[source,ftl]
+----
+<#assign activeEmployees = employees?filter(it -> it.active)>
+<#list activeEmployees as emp>
+    ${emp.name}
+</#list>
+
+----
+
+
+=== String Manipulation
+- String Conversion
+
+[source,ftl]
+----
+${name?upper_case} → "JOHN"
+${name?lower_case} → "john"
+${name?cap_first} → "John"
+${name?length} → 4
+${name?size} → if it's a list, prints list size
+${isActive?string("Y", "N")}  →  converts boolean value to string
+----
+
+- Trim Whitespaces
+[source,ftl]
+----
+${text?trim}
+----
+
+- Replace Substring
+[source,ftl]
+----
+${text?replace("old", "new")}
+----
+
+=== Date Formating
+
+- Converting Date Object into String
+[source,ftl]
+----
+${date?string("yyyy-MM-dd")}
+----
+Converts `date` to `"2024-02-06"`
+
+- Current Date with Formatting
+[source,ftl]
+----
+${.now?string("yyyy-MM-dd HH:mm")}
+----
+Outputs current timestamp in `"2000-02-06 12:30"`
+
+=== Including Template in Template
+
+- Include Another Template
+[source,ftl]
+----
+<#include "employee_details.ftl">
+----
+
+=== Handling Special Characters
+- Using Escape for `>` and `<`
+[source,ftl]
+----
+<#if salary \gte 50000>High-Level</#if>
+----
+
+[source,ftl]
+----
+\lt and \gte → `<` and `>`
+----
+
+=== Working with Objects
+[source,ftl]
+----
+${employee.getName()}
+${skill.getSkillNameUppercase()}
+----
+
+== Additional Notes
+- Use the FreeMarker documentation for advanced features: [FreeMarker Manual](https://freemarker.apache.org/docs/index.html)
+- Always validate your templates before deployment to ensure proper rendering.
+
+== Conclusion
+This project demonstrates the versatility of Apache FreeMarker for handling various formats (JSON, XML, SQL) with dynamic templating. With features like conditionals, includes, custom functions, and error handling, FreeMarker is a powerful tool for generating dynamic content in Java applications.
