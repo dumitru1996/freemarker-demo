@@ -97,18 +97,38 @@ Other possible options:
 actual values from the `data` object and returns the final populated template as a `String`.
 [source,java]
 ----
+ifdef::env-github[]
+ public String processTemplate(String templateName, Object data)
+endif::[]
+
+ifndef::env-github[]
 include::src/test/java/com/freemarker/demo/apacheFreemarker/FreemarkerUtil.java[lines=36]
+endif::[]
 ----
 `getTemplate(String templateName)` loads a template from a storage location by it's name (location is defined in setting Configuration)
 [source,java]
 ----
+ifdef::env-github[]
+ private static Template getTemplate(String templateName) throws IOException {
+        return configuration.getTemplate(templateName);
+    }
+endif::[]
+
+ifndef::env-github[]
 include::src/test/java/com/freemarker/demo/apacheFreemarker/FreemarkerUtil.java[lines=55..57]
+endif::[]
 ----
 Processes the template using FreeMarker. This method replaces placeholders in the template with actual values from `data`
 by getting key or getter (from object) that matches placeholder name and replaces it's value.
 [source,java]
 ----
+ifdef::env-github[]
+     freeMarkerTemplate.process(data, writer);
+endif::[]
+
+ifndef::env-github[]
 include::src/test/java/com/freemarker/demo/apacheFreemarker/FreemarkerUtil.java[lines=44]
+endif::[]
 ----
 
 
