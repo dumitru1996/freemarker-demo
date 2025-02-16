@@ -10,8 +10,8 @@ Dumitru Bodac <dmitrii1996@gmail.com>
 toc::[]
 
 == Project Overview
-This project demonstrates the usage of Apache FreeMarker for dynamic templating in Java. The project includes examples
-of working with JSON, XML, and SQL templates, along with advanced features such as custom functions, includes, and error handling.
+
+This project is created for basic demonstration of Apache FreeMaker use from testing perspective as a dynamic templating in Java. The project includes a basic configuration of a FreeMaker together with some simple ftl templates that are dynamically generated with data sent from DataTable.
 
 == Configuration Setup Details
 
@@ -28,8 +28,8 @@ of working with JSON, XML, and SQL templates, along with advanced features such 
 <version>2.3.31</version>
 </dependency>
 ----
-
-2. **Project Structure**:
+[start=2]
+. Project Structure:
 ```plaintext
 freemarker-demo
 ├── src
@@ -60,7 +60,8 @@ freemarker-demo
 |           └── Demo.feature
 ```
 
-3. **Using FreeMarker Configuration**:
+[start=3]
+. Using FreeMarker Configuration
 - Example setup in `FreemarkerUtil`:
 
 [source,java]
@@ -111,8 +112,8 @@ include::src/test/java/com/freemarker/demo/apacheFreemarker/FreemarkerUtil.java[
 ----
 
 
-
-4. **Running the Project**:
+[start=4]
+. Running the Project
 - Compile and run the project using Maven:
 
 [source,bash]
@@ -297,5 +298,3 @@ ${skill.getSkillNameUppercase()}
 == Additional Notes
 - Use the FreeMarker documentation for advanced features: https://freemarker.apache.org/docs/index.html[FreeMarker Manual]
 
-== Conclusion
-This project demonstrates the versatility of Apache FreeMarker for handling various formats (JSON, XML, SQL) with dynamic templating. With features like conditionals, includes, custom functions, and error handling.
