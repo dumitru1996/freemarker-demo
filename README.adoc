@@ -295,8 +295,7 @@ ${skill.getSkillNameUppercase()}
 ----
 
 == Additional Notes
-- Use the FreeMarker documentation for advanced features: [FreeMarker Manual](https://freemarker.apache.org/docs/index.html)
-- Always validate your templates before deployment to ensure proper rendering.
+- Use the FreeMarker documentation for advanced features: https://freemarker.apache.org/docs/index.html[FreeMarker Manual]
 
 == Conclusion
-This project demonstrates the versatility of Apache FreeMarker for handling various formats (JSON, XML, SQL) with dynamic templating. With features like conditionals, includes, custom functions, and error handling, FreeMarker is a powerful tool for generating dynamic content in Java applications.
+This project demonstrates the versatility of Apache FreeMarker for handling various formats (JSON, XML, SQL) with dynamic templating. With features like conditionals, includes, custom functions, and error handling.
