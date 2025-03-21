@@ -1,7 +1,7 @@
 <#ftl output_format="JSON">
 {
     "id": ${id},
-    "name": ${id},
+    "name": ${name},
     "email": "${email!"N/A"}",
     "role": "${role?capitalize}",
     "salary": "${salary}",

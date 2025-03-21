@@ -24,9 +24,4 @@ public class RequestOfUser {
     private String salaryLevel;
     private List<Skill> skills;
 
-    public void setSkills(List<String> skills) {
-        for (String skill : skills) {
-            this.skills.add(new Skill(skill));
-        }
-    }
 }
