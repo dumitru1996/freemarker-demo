@@ -53,8 +53,10 @@ freemarker-demo
 |   |           |   └── DemoException.java
 |   |           ├── runner
 |   |           |   └── CucumberRunner.java
-|   |           └── stepDef
-|   |               └── StepDefinitions.java
+|   |           ├── stepDef
+|   |           |   └── StepDefinitions.java
+|   |           └── test
+|   |               └── FreemarkerJsonTest.java
 |   └── resources
 |       └── features
 |           └── Demo.feature
